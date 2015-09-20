@@ -23,7 +23,7 @@
 #include "sstRec02LibInt.h"
 
 //=============================================================================
-sstRec01InternCls::sstRec01InternCls(dREC01RECSIZTYP Size)
+sstRec01InternCls::sstRec01InternCls(dREC02RECSIZTYP Size)
 {
     size = Size;
     quantity = 0;
@@ -55,12 +55,10 @@ sstRec01InternCls::~sstRec01InternCls()
     }
 }
 //=============================================================================
-int sstRec01InternCls::WritNew(int iKey, void* element, dREC01RECNUMTYP *index)
+int sstRec01InternCls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index)
 {
 
   if ( iKey != 0) return -1;
-
-  //int iStat = 0;
 
   if(this->FilHdl != NULL)
   {
@@ -75,9 +73,7 @@ int sstRec01InternCls::WritNew(int iKey, void* element, dREC01RECNUMTYP *index)
         inflate(100);
       // Copy element into storage,
       // starting at next empty space:
-      memcpy(&(storage[next * size]),
-             element, size);
-
+      memcpy(&(storage[next * size]), element, size);
   }
 
   next++;
@@ -86,9 +82,30 @@ int sstRec01InternCls::WritNew(int iKey, void* element, dREC01RECNUMTYP *index)
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::Read(int iKey, dREC01RECNUMTYP index, void *vAdr)
+int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 {
   if ( iKey != 0) return -1;
+
+  if(this->FilHdl != NULL)
+  {
+    // Jump to end of file and write record
+    fseek  (this->FilHdl, index * this->size, SEEK_SET);
+    fwrite (vRecAdr, this->size, 1, this->FilHdl);
+
+  }
+  else
+  {
+      // Copy element into storage,
+      // starting at next empty space:
+      memcpy(&(storage[index * size]), vRecAdr, size);
+  }
+
+  return 0;
+}
+//=============================================================================
+int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
+{
+    if ( iKey != 0) return -1;
 
   if(this->FilHdl != 0)
   {
@@ -112,7 +129,7 @@ int sstRec01InternCls::Read(int iKey, dREC01RECNUMTYP index, void *vAdr)
   return 0;  //  &(storage[index * size]);
 }
 //=============================================================================
-//void* sstRec01InternCls::fetch(dREC01RECNUMTYP index)
+//void* sstRec01InternCls::fetch(dREC02RECNUMTYP index)
 //{
 //  // Not out of bounds?
 //  //  if ( index >= next || index < 0)
@@ -131,11 +148,11 @@ int sstRec01InternCls::OpenFile(int   iKey,
 {
   if ( iKey != 0) return -1;
   if (this->FilHdl != NULL) return -2;
-  if (strnlen(cSysNam,dREC01FILNAMNAXLEN) <= 0) return -3;
+  if (strnlen(cSysNam,dREC02FILNAMMAXLEN) <= 0) return -3;
   if (this->next > 0) return -4;
 
-  strncpy(cDatnam, cSysNam, dREC01FILNAMNAXLEN);
-  strncat(cDatnam, ".rec", dREC01FILNAMNAXLEN);
+  strncpy(cDatnam, cSysNam, dREC02FILNAMMAXLEN);
+  strncat(cDatnam, ".rec", dREC02FILNAMMAXLEN);
 
   // Reoopen existing or open new file for binary Reading/Writing
   this->FilHdl = fopen( cDatnam, "a+b");
@@ -155,11 +172,11 @@ int sstRec01InternCls::NewFile(int   iKey,
 {
   if ( iKey != 0) return -1;
   if (this->FilHdl != NULL) return -2;
-  if (strnlen(cSysNam,dREC01FILNAMNAXLEN) <= 0) return -3;
+  if (strnlen(cSysNam,dREC02FILNAMMAXLEN) <= 0) return -3;
   if (this->next > 0) return -4;
 
-  strncpy(cDatnam, cSysNam, dREC01FILNAMNAXLEN);
-  strncat(cDatnam, ".rec", dREC01FILNAMNAXLEN);
+  strncpy(cDatnam, cSysNam, dREC02FILNAMMAXLEN);
+  strncat(cDatnam, ".rec", dREC02FILNAMMAXLEN);
 
   // Open new file for binary Reading/Writing
   this->FilHdl = fopen( cDatnam, "w+b");

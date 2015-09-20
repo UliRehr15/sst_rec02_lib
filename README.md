@@ -18,4 +18,6 @@ September 2015, Hanover, Germany, Uli Rehr
 Versions
 20150915: 2.0 Inertial check in from sstRec01 Version 1.6
           Rename class, Rename class files
-          Remove first read/write interface.
+          Remove first read/write interface
+20150920: 2.1 extend i/o functions with writeRec (at position)
+          Test folder checked in

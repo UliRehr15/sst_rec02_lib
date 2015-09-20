@@ -23,7 +23,7 @@
 #include "sstRec02LibInt.h"
 
 //==============================================================================
-sstRec02Cls::sstRec02Cls(dREC01RECSIZTYP Size) {
+sstRec02Cls::sstRec02Cls(dREC02RECSIZTYP Size) {
   poRec01Intern = new sstRec01InternCls(Size);
 }
 //==============================================================================
@@ -31,25 +31,27 @@ sstRec02Cls::~sstRec02Cls() {
     delete(poRec01Intern);
 }
 //==============================================================================
-//dREC01RECNUMTYP stash::add(void* element) {
+//dREC02RECNUMTYP stash::add(void* element) {
 
 //    // return(poRec01Intern->WritNew( 0, element) - 1); // Index number
-//    dREC01RECNUMTYP index=0;
+//    dREC02RECNUMTYP index=0;
 //    poRec01Intern->WritNew(0,element,&index);
 //    return index;
 //}
 //==============================================================================
-int sstRec02Cls::WritNew(int iKey, void* element, dREC01RECNUMTYP *index) {
+int sstRec02Cls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index) {
 
     // return(poRec01Intern->WritNew(iKey, element) - 1); // Index number
     return poRec01Intern->WritNew( iKey, element, index);
 }
 //==============================================================================
-//void* stash::fetch(dREC01RECNUMTYP index)
-//{ return (poRec01Intern->fetch(index));
-//}
+int sstRec02Cls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
+{
+  return poRec01Intern->Writ(iKey,vRecAdr, index);
+}
+
 //==============================================================================
-int sstRec02Cls::Read(int iKey, dREC01RECNUMTYP index, void *vAdr) {
+int sstRec02Cls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr) {
     int iStat = poRec01Intern->Read(iKey, index, vAdr);
     return iStat;
 }

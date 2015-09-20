@@ -32,19 +32,19 @@
  * @brief Record Number Type
  * @ingroup sstRecord02Lib
  */
-// typedef int  dREC01RECNUMTYP;    /**< Record Number Type    */
-// typedef unsigned int  dREC01RECNUMTYP;    /**< Record Number Type    */
-// typedef long  dREC01RECNUMTYP;    /**< Record Number Type    */
-typedef unsigned long  dREC01RECNUMTYP;    /**< Record Number Type: Int, Unsigned, Long, Unsigned Long   */
+// typedef int  dREC02RECNUMTYP;    /**< Record Number Type    */
+// typedef unsigned int  dREC02RECNUMTYP;    /**< Record Number Type    */
+// typedef long  dREC02RECNUMTYP;    /**< Record Number Type    */
+typedef unsigned long  dREC02RECNUMTYP;    /**< Record Number Type: Int, Unsigned, Long, Unsigned Long   */
 
 /**
  * @brief Record Size Type
  * @ingroup sstRecord02Lib
  */
-// typedef int  dREC01RECNUMTYP;    /**< Record Number Type    */
-// typedef unsigned int  dREC01RECNUMTYP;    /**< Record Number Type    */
-// typedef long  dREC01RECNUMTYP;    /**< Record Number Type    */
-typedef unsigned long  dREC01RECSIZTYP;    /**< Record Size Type: Int, Unsigned, Long, Unsigned Long  */
+// typedef int  dREC02RECNUMTYP;    /**< Record Number Type    */
+// typedef unsigned int  dREC02RECNUMTYP;    /**< Record Number Type    */
+// typedef long  dREC02RECNUMTYP;    /**< Record Number Type    */
+typedef unsigned long  dREC02RECSIZTYP;    /**< Record Size Type: Int, Unsigned, Long, Unsigned Long  */
 
 
 // forward declaration ---------------------------------------------------------
@@ -78,7 +78,7 @@ public:
     * @param Size [in] Size of one record
     */
     // ----------------------------------------------------------------------------
-  sstRec02Cls(dREC01RECSIZTYP Size);
+  sstRec02Cls(dREC02RECSIZTYP Size);
   ~sstRec02Cls();
   //==============================================================================
   /**
@@ -90,11 +90,12 @@ public:
   int count();
   //==============================================================================
   /**
-  * @brief Write new record into sstRec memory
+  * @brief // Write new record into sstRec memory <BR>
+  * iStat = oRecMem.WritNew(iKey, vRecAdr, *dPosition);
   *
-  * @param iKey    [in]  For the moment 0
-  * @param element [in]  Record to store
-  * @param index   [out] New Record number
+  * @param iKey      [in]  For the moment 0
+  * @param vRecAdr   [in]  adress of Record to store
+  * @param dPosition [out] New Positon of new Record number
   *
   * @return Errorstate
   *
@@ -102,7 +103,23 @@ public:
   * @retval   < 0: Unspecified Error
   */
   // ----------------------------------------------------------------------------
-  int WritNew(int iKey, void* element, dREC01RECNUMTYP *index);
+  int WritNew(int iKey, void* vRecAdr, dREC02RECNUMTYP *dPosition);
+  //==============================================================================
+  /**
+  * @brief // Write Record at postion in sstRec Memory <BR>
+  * iStat = oRecMem.Writ( iKey, *vRecAdr, dPosition);
+  *
+  * @param iKey      [in] For the moment 0
+  * @param vRecAdr   [in] Adress of record
+  * @param dPosition [in] target position to write record
+  *
+  * @return Errorstate
+  *
+  * @retval   = 0: OK
+  * @retval   < 0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP dPosition);
   //==============================================================================
   /**
   * @brief Read record from sstRec memory with Record number
@@ -117,7 +134,7 @@ public:
   * @retval   < 0: Unspecified Error
   */
   // ----------------------------------------------------------------------------
-  int Read(int iKey, dREC01RECNUMTYP index, void *vAdr);
+  int Read(int iKey, dREC02RECNUMTYP index, void *vAdr);
   //==============================================================================
   /**
   * @brief open file with name or create new file

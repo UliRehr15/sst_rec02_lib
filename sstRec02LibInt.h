@@ -33,7 +33,7 @@
  * @brief Maximal File Name Length
  * @ingroup sstRecord02InternLib
  */
-#define dREC01FILNAMNAXLEN 260   /**< Maximal File Name Length    */
+#define dREC02FILNAMMAXLEN 260   /**< Maximal File Name Length    */
 
 
 // Structures and Classes ------------------------------------------------------
@@ -63,7 +63,7 @@ class sstRec01InternCls
     * @param Size [in] Size of one record
     */
     // ----------------------------------------------------------------------------
-     sstRec01InternCls(dREC01RECSIZTYP Size);  // Constructor
+     sstRec01InternCls(dREC02RECSIZTYP Size);  // Constructor
     ~sstRec01InternCls();  // Destructor
      //==============================================================================
      /**
@@ -79,7 +79,22 @@ class sstRec01InternCls
      * @retval   < 0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int WritNew(int iKey, void* element, dREC01RECNUMTYP *index);
+     int WritNew(int iKey, void* element, dREC02RECNUMTYP *index);
+     //==============================================================================
+     /**
+     * @brief Write Record at postion in sstRec Memory
+     *
+     * @param iKey    [in] For the moment 0
+     * @param vRecAdr [in] Adress of record
+     * @param index   [in] target position to write record
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index);
      //==============================================================================
      /**
      * @brief Read record from sstRec memory with Record number
@@ -94,7 +109,7 @@ class sstRec01InternCls
      * @retval   < 0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int Read(int iKey, dREC01RECNUMTYP index, void *vAdr);
+     int Read(int iKey, dREC02RECNUMTYP index, void *vAdr);
      //==============================================================================
      /**
      * @brief return number of stored records in sstRec memory
@@ -172,13 +187,13 @@ class sstRec01InternCls
      // ----------------------------------------------------------------------------
     void inflate(int increase);
     //==============================================================================
-    dREC01RECSIZTYP size;     /**< Size of each record */
-    dREC01RECNUMTYP quantity; /**< Number of storage spaces */
-    dREC01RECNUMTYP next;     /**< Number of stored records */
+    dREC02RECSIZTYP size;     /**< Size of each record */
+    dREC02RECNUMTYP quantity; /**< Number of storage spaces */
+    dREC02RECNUMTYP next;     /**< Number of stored records */
     unsigned char* storage;   /**< Dynamically allocated array of bytes */
     FILE*          FilHdl;    /**< File Handle: If not NULL, store in file   */
     bool           bFileNotDelete;  /**< Do File not delete   */
-    char cDatnam[dREC01FILNAMNAXLEN]; /**< Filename for storing record data   */
+    char cDatnam[dREC02FILNAMMAXLEN]; /**< Filename for storing record data   */
 
 
 };
