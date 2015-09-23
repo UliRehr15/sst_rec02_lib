@@ -20,4 +20,5 @@ Versions
           Rename class, Rename class files
           Remove first read/write interface
 20150920: 2.1 extend i/o functions with writeRec (at position)
-          Test folder checked in
+          Test folder checked in <BR>
+20150923: 2.2 Changed record indexing from 0..n-1 to 1..n

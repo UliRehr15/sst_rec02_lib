@@ -56,7 +56,7 @@ class sstRec01InternCls;
 
 //==============================================================================
 /**
-* @brief Definition sstRec02Cls
+* @brief sst Record Memory Vers. 2 sstRec02Cls
 *
 * record storage <BR>
 *
@@ -73,7 +73,7 @@ class sstRec02Cls {
 public:
     //==============================================================================
     /**
-    * @brief stash constructor with size of one record
+    * @brief sstRec constructor with size of one record
     *
     * @param Size [in] Size of one record
     */
@@ -87,11 +87,11 @@ public:
   * @return number of elements in stash memory
   */
   // ----------------------------------------------------------------------------
-  int count();
+  dREC02RECNUMTYP count();
   //==============================================================================
   /**
   * @brief // Write new record into sstRec memory <BR>
-  * iStat = oRecMem.WritNew(iKey, vRecAdr, *dPosition);
+  * iStat = oRecMem.WritNew(iKey, *vRecAdr, *dPosition);
   *
   * @param iKey      [in]  For the moment 0
   * @param vRecAdr   [in]  adress of Record to store
@@ -115,26 +115,31 @@ public:
   *
   * @return Errorstate
   *
-  * @retval   = 0: OK
-  * @retval   < 0: Unspecified Error
+  * @retval   =  0: OK
+  * @retval   = -1: Wrong Key
+  * @retval   = -2: Wrong Record positon
+  * @retval   <  0: Unspecified Error
   */
   // ----------------------------------------------------------------------------
   int Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP dPosition);
   //==============================================================================
   /**
-  * @brief Read record from sstRec memory with Record number
+  * @brief // Read record from sstRec memory with Record number <BR>
+  * iStat = oRecMem.Read( iKey, dPosition, *vRecAdr);
   *
-  * @param iKey  [in]  For the moment 0
-  * @param index [in]  record number to read
-  * @param vAdr  [out] read Record
+  * @param iKey      [in]  For the moment 0
+  * @param dPosition [in]  record number to read
+  * @param vRecAdr   [out] read Record to record adress
   *
   * @return Errorstate
   *
-  * @retval   = 0: OK
-  * @retval   < 0: Unspecified Error
+  * @retval   =  0: OK
+  * @retval   = -1: Wrong Key
+  * @retval   = -2: Wrong Record positon
+  * @retval   <  0: Unspecified Error
   */
   // ----------------------------------------------------------------------------
-  int Read(int iKey, dREC02RECNUMTYP index, void *vAdr);
+  int Read(int iKey, dREC02RECNUMTYP dPosition, void *vRecAdr);
   //==============================================================================
   /**
   * @brief open file with name or create new file

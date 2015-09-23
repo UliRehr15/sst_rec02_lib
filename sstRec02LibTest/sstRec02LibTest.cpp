@@ -28,25 +28,34 @@ int main() {
     {
     sstRec02Cls oRecMem_Int(sizeof(int));
     dREC02RECNUMTYP index = 0;
-    for(int j = 0; j < 100; j++)
+
+    // standard errors
+    iStat = oRecMem_Int.Read(0,2,&index);
+    assert(iStat < 0);  // Error Memory is empty
+
+    iStat = oRecMem_Int.Writ(0,&index,2);
+    assert(iStat < 0);  // Error Memory is empty
+
+    for(int j = 1; j <= 100; j++)
       oRecMem_Int.WritNew(0,&j,&index);
 
     // Write record at position 2 into sstRec memory
     int iValue=6;
     iStat = oRecMem_Int.Writ(0, &iValue, 2);
+    assert(iStat >= 0);
 
     FILE* file = fopen("sstRec02LibTest.cpp", "r");
     assert(file);
     // Holds 80-character strings:
     sstRec02Cls stringStash(sizeof(char) * BUFSIZE);
-    index = 0;
+    index = 1;
     char buf[BUFSIZE];
     while(fgets(buf, BUFSIZE, file))
         //stringStash.add(buf);
         stringStash.WritNew(0,buf,&index);
     fclose(file);
 
-    for(int k = 0; k < oRecMem_Int.count(); k++)
+    for(dREC02RECNUMTYP k = 1; k <= oRecMem_Int.count(); k++)
     { int iVal=0;
       oRecMem_Int.Read(0,k,&iVal);
       printf("intStash.fetch(%d) = %d\n", k, iVal);
@@ -56,9 +65,9 @@ int main() {
     oRecMem_Int.Read( 0, 2, &iValue);
     assert(iValue==6);  // Return Value for record 2 should be 6
 
-    for(int i = 0; i < stringStash.count(); i++)
+    for(dREC02RECNUMTYP i = 1; i <= stringStash.count(); i++)
     {
-        stringStash.Read(0,i++,buf);
+        stringStash.Read(0,i,buf);
         printf("stringStash.fetch(%d) = %s", i, buf);
     }
     putchar('\n');
@@ -73,23 +82,26 @@ int main() {
       assert (iStat >= 0);
 
       dREC02RECNUMTYP index = 0;
-      for(int j = 0; j < 100; j++)
+      for(int j = 1; j <= 100; j++)
         intStash.WritNew(0,&j,&index);
       iStat = intStash.SetStoreFile(0);
     }
-
+// Open file TestInt.rec and read integer values, then delete file
     {
-      sstRec02Cls intStash(sizeof(int));
-      int iStat = intStash.OpenFile(0,(char*)"TestInt");
+      sstRec02Cls *intStash;
+      intStash = new sstRec02Cls(sizeof(int));
+      int iStat = intStash->OpenFile(0,(char*)"TestInt");
       assert (iStat >= 0);
 
-      for(int k = 0; k < intStash.count(); k++)
+      for(dREC02RECNUMTYP k = 1; k <= intStash->count(); k++)
       { int iVal=0;
-        intStash.Read(0,k,&iVal);
+        intStash->Read(0,k,&iVal);
+        assert (iVal==k);
         printf("intStash.fetch(%d) = %d\n", k, iVal);
       }
 
     putchar('\n');
+    delete(intStash);
     }
 
     //=============================================================================

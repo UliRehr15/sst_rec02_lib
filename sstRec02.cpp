@@ -56,7 +56,7 @@ int sstRec02Cls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr) {
     return iStat;
 }
 //==============================================================================
-int sstRec02Cls::count() {
+dREC02RECNUMTYP sstRec02Cls::count() {
     return poRec01Intern->count();
 }
 //==============================================================================

@@ -90,8 +90,10 @@ class sstRec01InternCls
      *
      * @return Errorstate
      *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Wrong Record positon
+     * @retval   <  0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
      int Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index);
@@ -105,8 +107,10 @@ class sstRec01InternCls
      *
      * @return Errorstate
      *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Wrong Record positon
+     * @retval   <  0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
      int Read(int iKey, dREC02RECNUMTYP index, void *vAdr);
@@ -117,7 +121,7 @@ class sstRec01InternCls
      * @return number of records, which are stored
      */
      // ----------------------------------------------------------------------------
-     int count();
+     dREC02RECNUMTYP count();
      //==============================================================================
      /**
      * @brief Open existing or new file of record storing
@@ -187,11 +191,11 @@ class sstRec01InternCls
      // ----------------------------------------------------------------------------
     void inflate(int increase);
     //==============================================================================
-    dREC02RECSIZTYP size;     /**< Size of each record */
-    dREC02RECNUMTYP quantity; /**< Number of storage spaces */
-    dREC02RECNUMTYP next;     /**< Number of stored records */
-    unsigned char* storage;   /**< Dynamically allocated array of bytes */
-    FILE*          FilHdl;    /**< File Handle: If not NULL, store in file   */
+    dREC02RECSIZTYP size;         /**< Size of each record */
+    dREC02RECNUMTYP quantity;     /**< Number of storage spaces */
+    dREC02RECNUMTYP dActStored;   /**< Number of stored records */
+    unsigned char* storage;       /**< Dynamically allocated array of bytes */
+    FILE*          FilHdl;        /**< File Handle: If not NULL, store in file   */
     bool           bFileNotDelete;  /**< Do File not delete   */
     char cDatnam[dREC02FILNAMMAXLEN]; /**< Filename for storing record data   */
 

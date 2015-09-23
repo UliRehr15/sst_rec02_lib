@@ -28,7 +28,7 @@ sstRec01InternCls::sstRec01InternCls(dREC02RECSIZTYP Size)
     size = Size;
     quantity = 0;
     storage = 0;
-    next = 0;
+    dActStored = 0;
     FilHdl = NULL;
     bFileNotDelete = 0;  // Default: File will be deleted
 }
@@ -63,21 +63,21 @@ int sstRec01InternCls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index)
   if(this->FilHdl != NULL)
   {
     // Jump to end of file and write record
-    fseek  (this->FilHdl, (this->next) * this->size, SEEK_SET);
+    fseek  (this->FilHdl, (this->dActStored) * this->size, SEEK_SET);
     fwrite (element, this->size, 1, this->FilHdl);
 
   }
   else
   {
-      if(next >= quantity) // Enough space left?
+      if(dActStored >= quantity) // Enough space left?
         inflate(100);
       // Copy element into storage,
       // starting at next empty space:
-      memcpy(&(storage[next * size]), element, size);
+      memcpy(&(storage[dActStored * size]), element, size);
   }
 
-  next++;
-  *index = next-1;
+  dActStored++;
+  *index = dActStored;
 
   return 0;
 }
@@ -85,6 +85,7 @@ int sstRec01InternCls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index)
 int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 {
   if ( iKey != 0) return -1;
+  if (index <= 0 || index > dActStored) return -2;
 
   if(this->FilHdl != NULL)
   {
@@ -97,7 +98,7 @@ int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
   {
       // Copy element into storage,
       // starting at next empty space:
-      memcpy(&(storage[index * size]), vRecAdr, size);
+      memcpy(&(storage[(index-1) * size]), vRecAdr, size);
   }
 
   return 0;
@@ -106,10 +107,11 @@ int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
 {
     if ( iKey != 0) return -1;
+    if(index <= 0 || index > dActStored) return -2;
 
   if(this->FilHdl != 0)
   {
-    fseek (this->FilHdl, (index)*this->size, SEEK_SET);
+    fseek (this->FilHdl, (index-1)*this->size, SEEK_SET);
     fread (vAdr, this->size, 1, this->FilHdl);
   }
   else
@@ -117,10 +119,10 @@ int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
       void *vLocAdr = NULL;
 
       // if(index >= next || index < 0)
-      if(index >= next)
+      if(index >= dActStored)
         return -2;  // Not out of bounds?
       // Produce pointer to desired element:
-      vLocAdr = (void*) &(storage[index * size]);
+      vLocAdr = (void*) &(storage[(index-1) * size]);
 
       // copy one record data to given record adress
       memcpy( vAdr, vLocAdr, size);
@@ -129,18 +131,8 @@ int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
   return 0;  //  &(storage[index * size]);
 }
 //=============================================================================
-//void* sstRec01InternCls::fetch(dREC02RECNUMTYP index)
-//{
-//  // Not out of bounds?
-//  //  if ( index >= next || index < 0)
-//    if ( index >= next)
-//    return 0;
-//  // Produce pointer to desired element
-//  return &(storage[index * size]);
-//}
-//=============================================================================
-int sstRec01InternCls::count() {
-  return next; // Number of elements in stash
+dREC02RECNUMTYP sstRec01InternCls::count() {
+  return dActStored; // Number of actual stored records
 }
 //==============================================================================
 int sstRec01InternCls::OpenFile(int   iKey,
@@ -149,7 +141,7 @@ int sstRec01InternCls::OpenFile(int   iKey,
   if ( iKey != 0) return -1;
   if (this->FilHdl != NULL) return -2;
   if (strnlen(cSysNam,dREC02FILNAMMAXLEN) <= 0) return -3;
-  if (this->next > 0) return -4;
+  if (this->dActStored > 0) return -4;
 
   strncpy(cDatnam, cSysNam, dREC02FILNAMMAXLEN);
   strncat(cDatnam, ".rec", dREC02FILNAMMAXLEN);
@@ -162,7 +154,7 @@ int sstRec01InternCls::OpenFile(int   iKey,
   long lSize = ftell(this->FilHdl);
 
   // Calculate number of existing records in file
-  this->next = lSize / this->size;
+  this->dActStored = lSize / this->size;
 
   return 0;
 }
@@ -173,7 +165,7 @@ int sstRec01InternCls::NewFile(int   iKey,
   if ( iKey != 0) return -1;
   if (this->FilHdl != NULL) return -2;
   if (strnlen(cSysNam,dREC02FILNAMMAXLEN) <= 0) return -3;
-  if (this->next > 0) return -4;
+  if (this->dActStored > 0) return -4;
 
   strncpy(cDatnam, cSysNam, dREC02FILNAMMAXLEN);
   strncat(cDatnam, ".rec", dREC02FILNAMMAXLEN);
