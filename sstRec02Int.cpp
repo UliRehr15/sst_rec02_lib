@@ -23,18 +23,22 @@
 #include "sstRec02LibInt.h"
 
 //=============================================================================
-sstRec01InternCls::sstRec01InternCls(dREC02RECSIZTYP Size)
+sstRec01InternCls::sstRec01InternCls(dREC02RECSIZTYP dRecSize)
 {
-    size = Size;
+    size = dRecSize;
     quantity = 0;
     storage = 0;
     dActStored = 0;
     FilHdl = NULL;
     bFileNotDelete = 0;  // Default: File will be deleted
+    this->oVector = new sstRec02VectSysCls(dRecSize);
 }
 //=============================================================================
 sstRec01InternCls::~sstRec01InternCls()
 {
+
+    delete (this->oVector);
+
     if(storage) {
       puts("freeing storage");
       free(storage);
@@ -55,7 +59,7 @@ sstRec01InternCls::~sstRec01InternCls()
     }
 }
 //=============================================================================
-int sstRec01InternCls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index)
+int sstRec01InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *index)
 {
 
   if ( iKey != 0) return -1;
@@ -82,7 +86,18 @@ int sstRec01InternCls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index)
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
+int sstRec01InternCls::WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo)
+{
+    // write record into vector memory
+    int iStat = this->oVector->WrtCargo( 0, vRecAdr);
+
+    // Write new record into intern sstRec memory
+    iStat = this->WritNewInt( iKey, this->oVector->GetAdr(), dRecNo);
+    return iStat;
+}
+
+//=============================================================================
+int sstRec01InternCls::WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 {
   if ( iKey != 0) return -1;
   if (index <= 0 || index > dActStored) return -2;
@@ -104,7 +119,18 @@ int sstRec01InternCls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
+int sstRec01InternCls::WritVector(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo)
+{
+
+    // write record into vector memory
+    int iStat = this->oVector->WrtCargo( 0, vRecAdr);
+
+    // Write Record at position in intern sstRec Memory
+    iStat = this->WritInt( iKey, this->oVector->GetAdr(), dRecNo);
+    return iStat;
+}
+//=============================================================================
+int sstRec01InternCls::ReadInt(int iKey, dREC02RECNUMTYP index, void *vAdr)
 {
     if ( iKey != 0) return -1;
     if(index <= 0 || index > dActStored) return -2;
@@ -128,7 +154,18 @@ int sstRec01InternCls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr)
       memcpy( vAdr, vLocAdr, size);
   }
 
-  return 0;  //  &(storage[index * size]);
+  return 0;
+}
+//=============================================================================
+int sstRec01InternCls::ReadVector(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr)
+{
+    // Read record from sstRec memory with Record number
+    int iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+    // Read record from vector memory
+    if (iStat >= 0) iStat = this->oVector->RedCargo( 0, vRecAdr);
+
+    return iStat;
 }
 //=============================================================================
 dREC02RECNUMTYP sstRec01InternCls::count() {

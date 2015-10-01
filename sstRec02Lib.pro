@@ -14,7 +14,10 @@ HEADERS		+=  ./Header/sstRec02Lib.h
 HEADERS		+= sstRec02LibInt.h
 
 SOURCES		+=  sstRec02.cpp
+#    sstRec02CargoKey.cpp \
+#    sstRec02CargoKeyInt.cpp
 SOURCES		+=  sstRec02Int.cpp
+SOURCES		+=  sstRec02Vector.cpp
 
 OTHER_FILES += README.md
 

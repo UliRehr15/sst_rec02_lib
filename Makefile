@@ -43,9 +43,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = sstRec02.cpp \
-		sstRec02Int.cpp 
+		sstRec02Int.cpp \
+		sstRec02Vector.cpp 
 OBJECTS       = sstRec02.o \
-		sstRec02Int.o
+		sstRec02Int.o \
+		sstRec02Vector.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -293,6 +295,10 @@ sstRec02.o: sstRec02.cpp Header/sstRec02Lib.h \
 sstRec02Int.o: sstRec02Int.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02Int.o sstRec02Int.cpp
+
+sstRec02Vector.o: sstRec02Vector.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02Vector.o sstRec02Vector.cpp
 
 ####### Install
 

@@ -40,6 +40,127 @@
 
 //==============================================================================
 /**
+* @brief Definition Class sstRec02VectSysCls
+*
+* More Comment
+*
+* Changed: 01.10.15  Re.
+*
+* @ingroup sstRecord02InternLib
+*
+* @author Re.
+*
+* @date 01.10.15
+*/
+// ----------------------------------------------------------------------------
+class sstRec02VectSysCls
+{
+  public:   // Öffentliche Funktionen
+    //=============================================================================
+    /**
+    * @brief constructor for vector memory
+    *
+    * @param dSize [in]  size of vector memory
+    *
+    * @return Errorstate
+    *
+    * @retval   = 0: OK
+    * @retval   < 0: Unspecified Error
+    */
+    // ----------------------------------------------------------------------------
+     sstRec02VectSysCls(dREC02RECSIZTYP dSize);  // Konstruktor
+     ~sstRec02VectSysCls();  // Destruktor
+     //=============================================================================
+     /**
+     * @brief write record to vector Memory
+     *
+     * @param iKey     [in]  For the moment 0
+     * @param CargoAdr [in]  adress of cargo record
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int WrtCargo ( int    iKey,
+                    void           *CargoAdr);
+
+     //=============================================================================
+     /**
+     * @brief Read record from vector memory
+     *
+     * @param iKey     [in]  For the moment 0
+     * @param CargoAdr [in]  Adress of cargo record
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RedCargo ( int    iKey,
+                    void           *CargoAdr);
+
+     //=============================================================================
+     /**
+     * @brief Calculate new position in memory
+     *
+     * @param BasPtr [in]  Basis pointer
+     * @param IdxPtr [out] Result pointer = Basis + offset
+     * @param Offs   [in]  Offset
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     void CalcSetPos ( void   *BasPtr,
+                       void  **IdxPtr,
+                       long    Offs);
+
+     //=============================================================================
+     /**
+     * @brief Get size of vector
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     unsigned long GetSize() const;
+
+     //=============================================================================
+     /**
+     * @brief Get adress of vector
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     void* GetAdr() const;
+     //=============================================================================
+     /**
+     * @brief reset memory of vector
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     void ResetMem(int iKey);
+
+  private:
+    void            *vVectorAdr;     /**< main memory vector with all cargo values */
+    unsigned long    ulVectorSize;  /**< size of main memory vector */
+};
+//==============================================================================
+/**
 * @brief Definition Class sstRec01InternCls
 *
 * Intern class for sstRecordLib <BR>
@@ -67,11 +188,12 @@ class sstRec01InternCls
     ~sstRec01InternCls();  // Destructor
      //==============================================================================
      /**
-     * @brief Write new record into sstRec memory
+     * @brief // Write new record into intern sstRec memory <BR>
+     * iStat = oRecMem.WritNewInt( iKey, vRecAdr, dRecNo);
      *
      * @param iKey    [in]  For the moment 0
-     * @param element [in]  Record to store
-     * @param index   [out] New index number
+     * @param vRecAdr [in]  Record to store
+     * @param dRecNo  [out] New index number
      *
      * @return Errorstate
      *
@@ -79,14 +201,31 @@ class sstRec01InternCls
      * @retval   < 0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int WritNew(int iKey, void* element, dREC02RECNUMTYP *index);
+     int WritNewInt(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo);
      //==============================================================================
      /**
-     * @brief Write Record at postion in sstRec Memory
+     * @brief // Write new record with sstRec vector <BR>
+     * iStat = oRecMem.WritNewVector( iKey, vRecAdr, dRecNo);
+     *
+     * @param iKey    [in]  For the moment 0
+     * @param vRecAdr [in]  Record to store
+     * @param dRecNo  [out] New index number
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Write Record at position in intern sstRec Memory  <BR>
+     * iStat = oRecMem.WritInt( iKey, *vRecAdr,  dRecNo);
      *
      * @param iKey    [in] For the moment 0
      * @param vRecAdr [in] Adress of record
-     * @param index   [in] target position to write record
+     * @param dRecNo  [in] target position to write record
      *
      * @return Errorstate
      *
@@ -96,14 +235,15 @@ class sstRec01InternCls
      * @retval   <  0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index);
+     int WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo);
      //==============================================================================
      /**
-     * @brief Read record from sstRec memory with Record number
+     * @brief // Write Record at position with sstRec vector  <BR>
+     * iStat = oRecMem.WritVector( iKey, *vRecAdr, dRecNo);
      *
-     * @param iKey  [in] For the moment 0
-     * @param index [in] record number to read
-     * @param vAdr  [out read record
+     * @param iKey    [in] For the moment 0
+     * @param vRecAdr [in] Adress of record
+     * @param dRecNo  [in] target position to write record
      *
      * @return Errorstate
      *
@@ -113,7 +253,43 @@ class sstRec01InternCls
      * @retval   <  0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int Read(int iKey, dREC02RECNUMTYP index, void *vAdr);
+     int WritVector(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Read record from sstRec memory with Record number <BR>
+     * iStat = oRecMem.ReadInt( iKey, dRecNo, *vRecAdr);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param dRecNo  [in] record number to read
+     * @param vRecAdr [out read record
+     *
+     * @return Errorstate
+     *
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Wrong Record positon
+     * @retval   <  0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int ReadInt(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr);
+     //==============================================================================
+     /**
+     * @brief // Read record from sstRec memory with Record number and vector <BR>
+     * iStat = oRecMem.ReadVector( iKey, dRecNo, *vRecAdr);
+     *
+     * @param iKey    [in] For the moment 0
+     * @param dRecNo  [in] record number to read
+     * @param vRecAdr [out read record
+     *
+     * @return Errorstate
+     *
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Wrong Record positon
+     * @retval   <  0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int ReadVector(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr);
      //==============================================================================
      /**
      * @brief return number of stored records in sstRec memory
@@ -198,9 +374,10 @@ class sstRec01InternCls
     FILE*          FilHdl;        /**< File Handle: If not NULL, store in file   */
     bool           bFileNotDelete;  /**< Do File not delete   */
     char cDatnam[dREC02FILNAMMAXLEN]; /**< Filename for storing record data   */
-
-
+    sstRec02VectSysCls *oVector;  /**< Intern memory space for vector            */
 };
+
+//==============================================================================
 
 #endif
 

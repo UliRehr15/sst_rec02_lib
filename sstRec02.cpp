@@ -31,28 +31,19 @@ sstRec02Cls::~sstRec02Cls() {
     delete(poRec01Intern);
 }
 //==============================================================================
-//dREC02RECNUMTYP stash::add(void* element) {
+int sstRec02Cls::WritNew(int iKey, void* vRecAdr, dREC02RECNUMTYP *pdRecNo) {
 
-//    // return(poRec01Intern->WritNew( 0, element) - 1); // Index number
-//    dREC02RECNUMTYP index=0;
-//    poRec01Intern->WritNew(0,element,&index);
-//    return index;
-//}
-//==============================================================================
-int sstRec02Cls::WritNew(int iKey, void* element, dREC02RECNUMTYP *index) {
-
-    // return(poRec01Intern->WritNew(iKey, element) - 1); // Index number
-    return poRec01Intern->WritNew( iKey, element, index);
+    return poRec01Intern->WritNewVector( iKey, vRecAdr, pdRecNo);
 }
 //==============================================================================
-int sstRec02Cls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
+int sstRec02Cls::Writ(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo)
 {
-  return poRec01Intern->Writ(iKey,vRecAdr, index);
+  return poRec01Intern->WritVector( iKey, vRecAdr, dRecNo);
 }
 
 //==============================================================================
-int sstRec02Cls::Read(int iKey, dREC02RECNUMTYP index, void *vAdr) {
-    int iStat = poRec01Intern->Read(iKey, index, vAdr);
+int sstRec02Cls::Read(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr) {
+    int iStat = poRec01Intern->ReadVector( iKey, dRecNo, vRecAdr);
     return iStat;
 }
 //==============================================================================

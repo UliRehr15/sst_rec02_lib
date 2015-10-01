@@ -22,7 +22,7 @@ release{
   LIBS        += ../../libs/libsst_rec02_lib_r.a
 }
 
-# HEADERS    += ../../header/sst_rec01_lib.h
+HEADERS    +=   sstRec02LibTest.h
 
 SOURCES    +=   sstRec02LibTest.cpp
 

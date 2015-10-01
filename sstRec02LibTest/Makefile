@@ -281,7 +281,8 @@ compiler_clean:
 
 ####### Compile
 
-sstRec02LibTest.o: sstRec02LibTest.cpp ../Header/sstRec02Lib.h
+sstRec02LibTest.o: sstRec02LibTest.cpp ../Header/sstRec02Lib.h \
+		sstRec02LibTest.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02LibTest.o sstRec02LibTest.cpp
 
 ####### Install
