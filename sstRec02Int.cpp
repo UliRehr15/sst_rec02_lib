@@ -23,20 +23,26 @@
 #include "sstRec02LibInt.h"
 
 //=============================================================================
-sstRec01InternCls::sstRec01InternCls(dREC02RECSIZTYP dRecSize)
+sstRec02InternCls::sstRec02InternCls(dREC02RECSIZTYP dRecSize)
 {
-    size = dRecSize;
     quantity = 0;
     storage = 0;
     dActStored = 0;
     FilHdl = NULL;
     bFileNotDelete = 0;  // Default: File will be deleted
-    this->oVector = new sstRec02VectSysCls(dRecSize);
+
+    this->oDssUsrKey = new (sstRec02CargoKeyInternCls);
+    this->oVector = new sstRec02VectSysCls();
+
+    int iStat = this->oVector->AddCargoSys( 0, dRecSize, (char*) "USR", this->oDssUsrKey);
+    assert(iStat >= 0);
+
 }
 //=============================================================================
-sstRec01InternCls::~sstRec01InternCls()
+sstRec02InternCls::~sstRec02InternCls()
 {
 
+    delete (this->oDssUsrKey);
     delete (this->oVector);
 
     if(storage) {
@@ -59,7 +65,7 @@ sstRec01InternCls::~sstRec01InternCls()
     }
 }
 //=============================================================================
-int sstRec01InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *index)
+int sstRec02InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *index)
 {
 
   if ( iKey != 0) return -1;
@@ -67,8 +73,8 @@ int sstRec01InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *inde
   if(this->FilHdl != NULL)
   {
     // Jump to end of file and write record
-    fseek  (this->FilHdl, (this->dActStored) * this->size, SEEK_SET);
-    fwrite (element, this->size, 1, this->FilHdl);
+    fseek  (this->FilHdl, (this->dActStored) * this->oVector->GetSize(), SEEK_SET);
+    fwrite (element, this->oVector->GetSize(), 1, this->FilHdl);
 
   }
   else
@@ -77,7 +83,9 @@ int sstRec01InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *inde
         inflate(100);
       // Copy element into storage,
       // starting at next empty space:
-      memcpy(&(storage[dActStored * size]), element, size);
+      memcpy(&(storage[dActStored * this->oVector->GetSize()]),
+              element,
+              this->oVector->GetSize());
   }
 
   dActStored++;
@@ -86,10 +94,10 @@ int sstRec01InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *inde
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo)
+int sstRec02InternCls::WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo)
 {
     // write record into vector memory
-    int iStat = this->oVector->WrtCargo( 0, vRecAdr);
+    int iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
 
     // Write new record into intern sstRec memory
     iStat = this->WritNewInt( iKey, this->oVector->GetAdr(), dRecNo);
@@ -97,7 +105,7 @@ int sstRec01InternCls::WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *d
 }
 
 //=============================================================================
-int sstRec01InternCls::WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
+int sstRec02InternCls::WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 {
   if ( iKey != 0) return -1;
   if (index <= 0 || index > dActStored) return -2;
@@ -105,74 +113,75 @@ int sstRec01InternCls::WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
   if(this->FilHdl != NULL)
   {
     // Jump to end of file and write record
-    fseek  (this->FilHdl, index * this->size, SEEK_SET);
-    fwrite (vRecAdr, this->size, 1, this->FilHdl);
+    fseek  (this->FilHdl, index * this->oVector->GetSize(), SEEK_SET);
+    fwrite (vRecAdr, this->oVector->GetSize(), 1, this->FilHdl);
 
   }
   else
   {
       // Copy element into storage,
       // starting at next empty space:
-      memcpy(&(storage[(index-1) * size]), vRecAdr, size);
+      memcpy(&(storage[(index-1) * this->oVector->GetSize()]), vRecAdr, this->oVector->GetSize());
   }
 
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::WritVector(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo)
+int sstRec02InternCls::WritVector(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo)
 {
 
     // write record into vector memory
-    int iStat = this->oVector->WrtCargo( 0, vRecAdr);
+    int iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
 
     // Write Record at position in intern sstRec Memory
     iStat = this->WritInt( iKey, this->oVector->GetAdr(), dRecNo);
     return iStat;
 }
 //=============================================================================
-int sstRec01InternCls::ReadInt(int iKey, dREC02RECNUMTYP index, void *vAdr)
+int sstRec02InternCls::ReadInt(int iKey, dREC02RECNUMTYP index, void *vAdr)
 {
     if ( iKey != 0) return -1;
     if(index <= 0 || index > dActStored) return -2;
 
   if(this->FilHdl != 0)
   {
-    fseek (this->FilHdl, (index-1)*this->size, SEEK_SET);
-    fread (vAdr, this->size, 1, this->FilHdl);
+    fseek (this->FilHdl, (index-1) * this->oVector->GetSize(), SEEK_SET);
+    fread (vAdr, this->oVector->GetSize(), 1, this->FilHdl);
   }
   else
   {
       void *vLocAdr = NULL;
 
       // if(index >= next || index < 0)
-      if(index >= dActStored)
+      if(index > dActStored)
         return -2;  // Not out of bounds?
+
       // Produce pointer to desired element:
-      vLocAdr = (void*) &(storage[(index-1) * size]);
+      vLocAdr = (void*) &(storage[(index-1) * this->oVector->GetSize()]);
 
       // copy one record data to given record adress
-      memcpy( vAdr, vLocAdr, size);
+      memcpy( vAdr, vLocAdr, this->oVector->GetSize());
   }
 
   return 0;
 }
 //=============================================================================
-int sstRec01InternCls::ReadVector(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr)
+int sstRec02InternCls::ReadVector(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr)
 {
     // Read record from sstRec memory with Record number
     int iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
 
     // Read record from vector memory
-    if (iStat >= 0) iStat = this->oVector->RedCargo( 0, vRecAdr);
+    if (iStat >= 0) iStat = this->oVector->RedCargo( 0, this->oDssUsrKey, vRecAdr);
 
     return iStat;
 }
 //=============================================================================
-dREC02RECNUMTYP sstRec01InternCls::count() {
+dREC02RECNUMTYP sstRec02InternCls::count() {
   return dActStored; // Number of actual stored records
 }
 //==============================================================================
-int sstRec01InternCls::OpenFile(int   iKey,
+int sstRec02InternCls::OpenFile(int   iKey,
                                 char *cSysNam)
 {
   if ( iKey != 0) return -1;
@@ -191,12 +200,12 @@ int sstRec01InternCls::OpenFile(int   iKey,
   long lSize = ftell(this->FilHdl);
 
   // Calculate number of existing records in file
-  this->dActStored = lSize / this->size;
+  this->dActStored = lSize / this->oVector->GetSize();
 
   return 0;
 }
 //==============================================================================
-int sstRec01InternCls::NewFile(int   iKey,
+int sstRec02InternCls::NewFile(int   iKey,
                                char *cSysNam)
 {
   if ( iKey != 0) return -1;
@@ -214,20 +223,80 @@ int sstRec01InternCls::NewFile(int   iKey,
   return 0;
 }
 //==============================================================================
-int sstRec01InternCls::SetStoreFile(int iKey)
+int sstRec02InternCls::SetStoreFile(int iKey)
 {
   if ( iKey != 0) return -1;
   this->bFileNotDelete = 1;
   return 0;
 }
 //=============================================================================
-void sstRec01InternCls::inflate(int increase) {
-  void* v =
-    realloc(storage, (quantity+increase)*size);
+void sstRec02InternCls::inflate(int increase) {
+  void* v = realloc(storage, (quantity+increase) * this->oVector->GetSize());
   assert(v);  // Was it successful?
   storage = (unsigned char*)v;
   quantity += increase;
 }
 //=============================================================================
+int sstRec02InternCls::AddCargoSys( int                  iKey,
+                              unsigned int         uiSize,
+                              char                *cCargoNam,
+                              sstRec02CargoKeyInternCls *oCargoKey)
+{
+    int iRet  = 0;
+    int iStat = 0;
+  //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    if (this->count()!= 0) return -10;
+
+    iStat = this->oVector->AddCargoSys(iKey,uiSize,cCargoNam,oCargoKey);
+
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
+}
+
+//==============================================================================
+int sstRec02InternCls::WrtCargo ( int              iKey,
+                            sstRec02CargoKeyInternCls *oDataKey,
+                            void            *vCargoAdr)
+{
+    int iRet  = 0;
+    int iStat = 0;
+  //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    iStat = this->oVector->WrtCargo(0,oDataKey,vCargoAdr);
+
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
+}
+//==============================================================================
+int sstRec02InternCls::RedCargo ( int              iKey,
+                            sstRec02CargoKeyInternCls *oDataKey,
+                            void            *vCargoAdr)
+{
+    int iRet  = 0;
+    int iStat = 0;
+  //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    iStat = this->oVector->RedCargo(0,oDataKey,vCargoAdr);
+
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
+}
+//==============================================================================
 
 

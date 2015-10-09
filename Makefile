@@ -43,9 +43,19 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = sstRec02.cpp \
+		sstRec03CargoMem.cpp \
+		sstRec02TestIntern.cpp \
+		sstRec02TestRec.cpp \
+		sstRec02CargoKey.cpp \
+		sstRec02CargoKeyInt.cpp \
 		sstRec02Int.cpp \
 		sstRec02Vector.cpp 
 OBJECTS       = sstRec02.o \
+		sstRec03CargoMem.o \
+		sstRec02TestIntern.o \
+		sstRec02TestRec.o \
+		sstRec02CargoKey.o \
+		sstRec02CargoKeyInt.o \
 		sstRec02Int.o \
 		sstRec02Vector.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -291,6 +301,26 @@ compiler_clean:
 sstRec02.o: sstRec02.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02.o sstRec02.cpp
+
+sstRec03CargoMem.o: sstRec03CargoMem.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec03CargoMem.o sstRec03CargoMem.cpp
+
+sstRec02TestIntern.o: sstRec02TestIntern.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02TestIntern.o sstRec02TestIntern.cpp
+
+sstRec02TestRec.o: sstRec02TestRec.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02TestRec.o sstRec02TestRec.cpp
+
+sstRec02CargoKey.o: sstRec02CargoKey.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02CargoKey.o sstRec02CargoKey.cpp
+
+sstRec02CargoKeyInt.o: sstRec02CargoKeyInt.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02CargoKeyInt.o sstRec02CargoKeyInt.cpp
 
 sstRec02Int.o: sstRec02Int.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h

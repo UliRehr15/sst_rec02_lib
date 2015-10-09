@@ -13,9 +13,13 @@ INCLUDEPATH = ./Header
 HEADERS		+=  ./Header/sstRec02Lib.h
 HEADERS		+= sstRec02LibInt.h
 
-SOURCES		+=  sstRec02.cpp
-#    sstRec02CargoKey.cpp \
-#    sstRec02CargoKeyInt.cpp
+SOURCES		+=  sstRec02.cpp \
+    sstRec03CargoMem.cpp \
+    sstRec02TestIntern.cpp \
+    sstRec02TestRec.cpp
+    #sstRec02Cargo.cpp
+SOURCES		+=  sstRec02CargoKey.cpp
+SOURCES		+=  sstRec02CargoKeyInt.cpp
 SOURCES		+=  sstRec02Int.cpp
 SOURCES		+=  sstRec02Vector.cpp
 

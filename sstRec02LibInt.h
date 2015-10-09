@@ -40,6 +40,99 @@
 
 //==============================================================================
 /**
+* @brief Definition Class DssCargoMem_Cls
+*
+* More Comment
+*
+* Changed: 19.02.10  Re.
+*
+* @ingroup sstRecord02InternLib
+*
+* @author Re.
+*
+* @date 19.02.10
+*/
+// ----------------------------------------------------------------------------
+class sstRec02CargoMemCls
+{
+  public:   // Öffentliche Funktionen
+     sstRec02CargoMemCls();  // Konstruktor
+     ~sstRec02CargoMemCls();  // Destruktor
+     //==============================================================================
+     /**
+     * @brief return Offset
+     *
+     * @return Offset
+     */
+     // ----------------------------------------------------------------------------
+     int GetOffset();
+     //==============================================================================
+     /**
+     * @brief Set Offset
+     *
+     * @param iOffset [in] Offset
+     */
+     // ----------------------------------------------------------------------------
+     void SetOffset(int iOffset);
+     //==============================================================================
+     /**
+     * @brief return Cargo Size
+     *
+     * @return Cargo Size
+     */
+     // ----------------------------------------------------------------------------
+     int GetCargoSize();
+     //==============================================================================
+     /**
+     * @brief Set Cargo Size
+     *
+     * @param iSize [in] Cargo Size
+     */
+     // ----------------------------------------------------------------------------
+     void SetCargoSize(int iSize);
+     //==============================================================================
+     /**
+     * @brief return adress of cargo name char
+     *
+     * @return adress of cargo name char
+     */
+     // ----------------------------------------------------------------------------
+     char* GetCargoSysNam();
+     //==============================================================================
+     /**
+     * @brief set cargo name
+     *
+     * @param cNam [in] adress of cargo name char
+     */
+     // ----------------------------------------------------------------------------
+     void SetCargoSysNam(char *cNam);
+     //==============================================================================
+     /**
+     * @brief get cargo adress
+     *
+     * @return cargo adress
+     */
+     // ----------------------------------------------------------------------------
+     void* GetCargoAdr();
+     //==============================================================================
+     /**
+     * @brief set cargo adress
+     *
+     * @param vCargoAdr [in] adress of cargo
+     */
+     // ----------------------------------------------------------------------------
+     void SetCargoAdr(void *vCargoAdr);
+     //==============================================================================
+  private:  // Private Funktionen
+     int iOffset;           /**< Offset from Start of vector */
+     int iSize;             /**< Size of cargo sys*/
+     char cNam[4];          /**< Name of cargo sys */
+     void *CargoAdr;        /**< Adress in vector memory */
+};
+
+
+//==============================================================================
+/**
 * @brief Definition Class sstRec02VectSysCls
 *
 * More Comment
@@ -60,47 +153,78 @@ class sstRec02VectSysCls
     /**
     * @brief constructor for vector memory
     *
-    * @param dSize [in]  size of vector memory
-    *
     * @return Errorstate
     *
     * @retval   = 0: OK
     * @retval   < 0: Unspecified Error
     */
     // ----------------------------------------------------------------------------
-     sstRec02VectSysCls(dREC02RECSIZTYP dSize);  // Konstruktor
-     ~sstRec02VectSysCls();  // Destruktor
+     sstRec02VectSysCls();
+     ~sstRec02VectSysCls();
+     //=============================================================================
+     /**
+     * @brief // Add cargo system to vector memory and get new identification key <BR>
+     * iStat = oVector.AddCargoSys( iKey, uiSize, *cCargoNam, *oCargoKey);
+     *
+     * @param iKey      [in]  For the moment 0
+     * @param uiSize    [in]  Size of cargo record
+     * @param cCargoNam [in]  Name of cargo system (4 Letters)
+     * @param oCargoKey [out] key of new cargo object
+     *
+     * @return Errorstate
+     *
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Cargo Packet must not be empty
+     * @retval   = -3: Cargo Name has to be length 3
+     * @retval   = -4: Cargo Key should be empty
+     * @retval   = -5: Cargo Name should be unique
+     * @retval   <  0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int AddCargoSys( int             iKey,
+                      unsigned int    uiSize,
+                      char           *cCargoNam,
+                      sstRec02CargoKeyInternCls *oCargoKey);
      //=============================================================================
      /**
      * @brief write record to vector Memory
      *
-     * @param iKey     [in]  For the moment 0
-     * @param CargoAdr [in]  adress of cargo record
+     * @param iKey      [in]  For the moment 0
+     * @param oDataKey  [in]  adress of cargo record
+     * @param vCargoAdr [in]  adress of cargo record
      *
      * @return Errorstate
      *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Cargo key not OK for RecMem object
+     * @retval    < 0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int WrtCargo ( int    iKey,
-                    void           *CargoAdr);
+     int WrtCargo ( int              iKey,
+                    sstRec02CargoKeyInternCls *oDataKey,
+                    void            *vCargoAdr);
 
      //=============================================================================
      /**
      * @brief Read record from vector memory
      *
-     * @param iKey     [in]  For the moment 0
-     * @param CargoAdr [in]  Adress of cargo record
+     * @param iKey      [in]  For the moment 0
+     * @param oDataKey  [in]  Adress of cargo record
+     * @param vCargoAdr [in]  Adress of cargo record
      *
      * @return Errorstate
      *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Cargo key not OK for RecMem object
+     * @retval   <  0: Unspecified Error
      */
      // ----------------------------------------------------------------------------
-     int RedCargo ( int    iKey,
-                    void           *CargoAdr);
+     int RedCargo ( int              iKey,
+                    sstRec02CargoKeyInternCls *oDataKey,
+                    void            *vCargoAdr);
 
      //=============================================================================
      /**
@@ -145,6 +269,40 @@ class sstRec02VectSysCls
      void* GetAdr() const;
      //=============================================================================
      /**
+     * @brief Get Adress of cargo system
+     *
+     * @param iKey      [in]     For the moment 0
+     * @param oDataKey  [in out] Key of cargo object
+     * @param vCargoAdr [out]    Adress of cargo system
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int GetCargoAdr (int               iKey,
+                      sstRec02CargoKeyInternCls  *oDataKey,
+                      void            **vCargoAdr);
+     //=============================================================================
+     /**
+     * @brief Get offset of cargo system
+     *
+     * @param iKey     [in]     For the moment 0
+     * @param oDataKey [in out] Key of cargo object
+     * @param iOffset  [out]    offset of cargo object
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int GetOffset (int                iKey,
+                    sstRec02CargoKeyInternCls   *oDataKey,
+                    int               *iOffset);
+     //=============================================================================
+     /**
      * @brief reset memory of vector
      *
      * @return Errorstate
@@ -156,9 +314,62 @@ class sstRec02VectSysCls
      void ResetMem(int iKey);
 
   private:
+    int              iNumCargoSys;  /**< Number of Cargo Systems */
+    sstRec02CargoMemCls *MemAdr;        /**< Field of of Cargo Systems */
     void            *vVectorAdr;     /**< main memory vector with all cargo values */
     unsigned long    ulVectorSize;  /**< size of main memory vector */
 };
+//-----------------------------------------------------------------------------
+/**
+* @brief Definition Class DssCargoKey_Cls
+*
+* More Comment
+*
+* Changed: 19.02.10  Re.
+*
+* @ingroup sstRecord02InternLib
+*
+* @author Re.
+*
+* @date 19.02.10
+*/
+//==============================================================================
+class sstRec02CargoKeyInternCls
+{
+  public:   // Öffentliche Funktionen
+     sstRec02CargoKeyInternCls();  // Konstruktor
+     ~sstRec02CargoKeyInternCls();  // Destruktor
+     int  iKey;           /**< Key of cargo sys */
+     char iNam[4];        /**< Name of cargo sys*/
+     sstRec02VectSysCls *oCargoAdr;  /**< Adress of cargo object  */
+  private:  // Private Funktionen
+     // int iDummy;
+};
+//-----------------------------------------------------------------------------
+///**
+//* @brief Definition Class Cargo_Cls
+//*
+//* More Comment
+//*
+//* Changed: 19.02.10  Re.
+//*
+//* @ingroup sstDss2_Lib
+//*
+//* @author Re.
+//*
+//* @date 19.02.10
+//*/
+//// ----------------------------------------------------------------------------
+//class sstRec02CargoCls
+//{
+//  public:   // Öffentliche Funktionen
+//     sstRec02CargoCls();  // Konstruktor
+//    ~sstRec02CargoCls();  // Destruktor
+//  private:  // Private Funktionen
+//     void *Adr;              /**< adress in memory  */
+//     unsigned int uiSize;    /**< Size ??  */
+//     char cNam[4];           /**< USR, SYS, TRE, LL1, LL2, LL3  */
+//};
 //==============================================================================
 /**
 * @brief Definition Class sstRec01InternCls
@@ -174,7 +385,7 @@ class sstRec02VectSysCls
 * @date 09.07.15
 */
 // ----------------------------------------------------------------------------
-class sstRec01InternCls
+class sstRec02InternCls
 {
   public:   // Public functions
     //==============================================================================
@@ -184,8 +395,8 @@ class sstRec01InternCls
     * @param Size [in] Size of one record
     */
     // ----------------------------------------------------------------------------
-     sstRec01InternCls(dREC02RECSIZTYP Size);  // Constructor
-    ~sstRec01InternCls();  // Destructor
+     sstRec02InternCls(dREC02RECSIZTYP Size);  // Constructor
+    ~sstRec02InternCls();  // Destructor
      //==============================================================================
      /**
      * @brief // Write new record into intern sstRec memory <BR>
@@ -352,6 +563,71 @@ class sstRec01InternCls
      // ----------------------------------------------------------------------------
      int SetStoreFile(int iKey);
      //==============================================================================
+     /**
+     * @brief // Add cargo system to sstRec memory and get new identification key <BR>
+     * iStat = oRecMem.AddCargoSys( iKey, uiSize, *cCargoNam, *oCargoKey);
+     *
+     * @param iKey      [in]  For the moment 0
+     * @param uiSize    [in]  Size of cargo record
+     * @param cCargoNam [in]  Name of cargo system (4 Letters)
+     * @param oCargoKey [out] key of new cargo object
+     *
+     * @return Errorstate
+     *
+     * @retval   =   0: OK
+     * @retval   =  -1: Wrong Key
+     * @retval   =  -2: Cargo Packet must not be empty
+     * @retval   =  -3: Cargo Name has to be length 3
+     * @retval   =  -4: Cargo Key should be empty
+     * @retval   =  -5: Cargo Name should be unique
+     * @retval   = -10: sstRecMem is not empty
+     * @retval   <   0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int AddCargoSys( int                  iKey,
+                      unsigned int         uiSize,
+                      char                *cCargoNam,
+                      sstRec02CargoKeyInternCls *oCargoKey);
+     //=============================================================================
+     /**
+     * @brief write record to vector Memory
+     *
+     * @param iKey      [in]  For the moment 0
+     * @param oDataKey  [in]  adress of cargo record
+     * @param vCargoAdr [in]  adress of cargo record
+     *
+     * @return Errorstate
+     *
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Cargo key not OK for RecMem object
+     * @retval   <  0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int WrtCargo ( int              iKey,
+                    sstRec02CargoKeyInternCls *oDataKey,
+                    void            *vCargoAdr);
+     //=============================================================================
+     /**
+     * @brief Read record from vector memory
+     *
+     * @param iKey      [in]  For the moment 0
+     * @param oDataKey  [in]  Identification Key
+     * @param vCargoAdr [in]  Adress of cargo record
+     *
+     * @return Errorstate
+     *
+     * @retval   =  0: OK
+     * @retval   = -1: Wrong Key
+     * @retval   = -2: Cargo key not OK for RecMem object
+     * @retval   <  0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RedCargo ( int              iKey,
+                    sstRec02CargoKeyInternCls *oDataKey,
+                    void            *vCargoAdr);
+     //=============================================================================
+
   private:  // Private functions
      //==============================================================================
      /**
@@ -367,7 +643,7 @@ class sstRec01InternCls
      // ----------------------------------------------------------------------------
     void inflate(int increase);
     //==============================================================================
-    dREC02RECSIZTYP size;         /**< Size of each record */
+    // dREC02RECSIZTYP dUsrSize;     /**< Size of each user record */
     dREC02RECNUMTYP quantity;     /**< Number of storage spaces */
     dREC02RECNUMTYP dActStored;   /**< Number of stored records */
     unsigned char* storage;       /**< Dynamically allocated array of bytes */
@@ -375,8 +651,14 @@ class sstRec01InternCls
     bool           bFileNotDelete;  /**< Do File not delete   */
     char cDatnam[dREC02FILNAMMAXLEN]; /**< Filename for storing record data   */
     sstRec02VectSysCls *oVector;  /**< Intern memory space for vector            */
+    sstRec02CargoKeyInternCls *oDssUsrKey;
 };
+//==============================================================================
+// iStat = Test_VectorSys_Stack ( iKey);
+int Test_VectorSys_Stack (int iKey);
 
+// iStat = Test_VectorSys_Heap ( iKey);
+int Test_VectorSys_Heap (int iKey);
 //==============================================================================
 
 #endif

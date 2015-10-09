@@ -49,11 +49,51 @@ typedef unsigned long  dREC02RECSIZTYP;    /**< Record Size Type: Int, Unsigned,
 
 // forward declaration ---------------------------------------------------------
 
-class sstRec01InternCls;
+class sstRec02InternCls;
+class sstRec02CargoKeyInternCls;
 
 //------------------------------------------------------------------------------
 
 
+//==============================================================================
+/**
+* @brief Definition Class sstTestInterfaceCls
+*
+* template for sst base class <BR>
+*
+* Changed: 09.07.15  Re.
+*
+* @ingroup sstTemplateLib
+*
+* @author Re.
+*
+* @date 09.07.15
+*/
+// ----------------------------------------------------------------------------
+class sstRec02CargoKeyCls
+{
+  public:   // Public functions
+     sstRec02CargoKeyCls();  // Constructor
+    ~sstRec02CargoKeyCls();  // Destructor
+     //==============================================================================
+     /**
+     * @brief Shortstory
+     *
+     * @param iKey [in] For the moment 0
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+         // Func_1(int iKey);
+     // ----------------------------------------------------------------------------
+       // private:  // Private functions
+     // sstRec02CargoKeyInternCls* GetInternAdr();
+     sstRec02CargoKeyInternCls *poCargoKeyIntern;   /**< Pointer to intern object */
+
+};
 //==============================================================================
 /**
 * @brief sst Record Memory Vers. 2 sstRec02Cls
@@ -191,11 +231,101 @@ public:
   */
   // ----------------------------------------------------------------------------
   int SetStoreFile(int iKey);
-  //==============================================================================
+  //=============================================================================
+  /**
+  * @brief // Add cargo system to sstRec memory and get new identification key <BR>
+  * iStat = oRecMem.AddCargoSys( iKey, uiSize, *cCargoNam, *oCargoKey);
+  *
+  * @param iKey      [in]  For the moment 0
+  * @param uiSize    [in]  Size of cargo record
+  * @param cCargoNam [in]  Name of cargo system (3 Letters)
+  * @param oCargoKey [out] key of new cargo object
+  *
+  * @return Errorstate
+  *
+  * @retval   =   0: OK
+  * @retval   =  -1: Wrong Key
+  * @retval   =  -2: Cargo Packet must not be empty
+  * @retval   =  -3: Cargo Name has to be length 3
+  * @retval   =  -4: Cargo Key should be empty
+  * @retval   =  -5: Cargo Name should be unique
+  * @retval   = -10: sstRecMem is not empty
+  * @retval   <   0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int AddCargoSys( int                  iKey,
+                   unsigned int         uiSize,
+                   char                *cCargoNam,
+                   sstRec02CargoKeyCls *oCargoKey);
+  //=============================================================================
+  /**
+  * @brief // write cargo packet to vector Memory <BR>
+  * iStat = oRecMem.WrtCargo ( iKey, *oCargoKey, *vCargoAdr);
+  *
+  * @param iKey       [in]  For the moment 0
+  * @param oCargoKey  [in]  identification key of cargo packet
+  * @param vCargoAdr  [in]  adress of cargo packet
+  *
+  * @return Errorstate
+  *
+  * @retval   =  0: OK
+  * @retval   = -1: Wrong Key
+  * @retval   = -2: Cargo key not OK for RecMem object
+  * @retval   <  0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int WrtCargo ( int                  iKey,
+                 sstRec02CargoKeyCls *oCargoKey,
+                 void                *vCargoAdr);
+  //=============================================================================
+  /**
+  * @brief // Read cargo packet from vector memory  <BR>
+  * iStat = oRecMem.RedCargo ( iKey, *oCargoKey, *vCargoAdr);
+  *
+  * @param iKey       [in]   For the moment 0
+  * @param oCargoKey  [in]   identification key of cargo packet
+  * @param vCargoAdr  [out]  Adress of cargo packet
+  *
+  * @return Errorstate
+  *
+  * @retval   =  0: OK
+  * @retval   = -1: Wrong Key
+  * @retval   = -2: Cargo key not OK for RecMem object
+  * @retval   <  0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int RedCargo ( int                  iKey,
+                 sstRec02CargoKeyCls *oCargoKey,
+                 void                *vCargoAdr);
+  //=============================================================================
+
 private:
-  sstRec01InternCls *poRec01Intern;   /**< Pointer to intern object */
+  sstRec02InternCls *poRec01Intern;   /**< Pointer to intern object */
 
 };
 
+//==============================================================================
+class sstRec02TestRec1Cls
+{
+  public:   // Public functions
+     sstRec02TestRec1Cls();  // Constructor
+     int iValue;        /**< Test Integer Value */
+     char cVal[5];     /**< Test Character Value */
+
+};
+//==============================================================================
+class sstRec02TestRec2Cls
+{
+  public:   // Public functions
+    sstRec02TestRec2Cls();  // Constructor
+    int    iValue;          /**< Test Integer Value */
+    unsigned int uiValue;   /**< Test Unsigned Value */
+    double dValue;          /**< Test Double Value */
+    char cVal[10];         /**< Test Character Value */
+};
+//==============================================================================
+
+// Do some intern Tests
+int sstRec02_DoSomeInternTests (int iKey);
 
 #endif // SST_REC01_LIB

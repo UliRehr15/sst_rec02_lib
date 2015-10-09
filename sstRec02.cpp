@@ -24,7 +24,7 @@
 
 //==============================================================================
 sstRec02Cls::sstRec02Cls(dREC02RECSIZTYP Size) {
-  poRec01Intern = new sstRec01InternCls(Size);
+  poRec01Intern = new sstRec02InternCls(Size);
 }
 //==============================================================================
 sstRec02Cls::~sstRec02Cls() {
@@ -76,5 +76,68 @@ int sstRec02Cls::SetStoreFile(int iKey)
   if ( iKey != 0) return -1;
   int iStat = this->poRec01Intern->SetStoreFile(iKey);
   return iStat;
+}
+//==============================================================================
+int sstRec02Cls::AddCargoSys( int                  iKey,
+                              unsigned int         uiSize,
+                              char                *cCargoNam,
+                              sstRec02CargoKeyCls *oCargoKey)
+//-----------------------------------------------------------------------------
+{
+    int iRet  = 0;
+    int iStat = 0;
+    //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    iStat = this->poRec01Intern->AddCargoSys(iKey,uiSize,cCargoNam, oCargoKey->poCargoKeyIntern);
+
+    // Fatal Errors goes to an assert
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
+}
+
+//==============================================================================
+int sstRec02Cls::WrtCargo ( int              iKey,
+                            sstRec02CargoKeyCls *oDataKey,
+                            void            *vCargoAdr)
+//------------------------------------------------------------------------------
+{
+    int iRet  = 0;
+    int iStat = 0;
+    //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    iStat = this->poRec01Intern->WrtCargo(iKey,oDataKey->poCargoKeyIntern,vCargoAdr);
+
+    // Fatal Errors goes to an assert
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
+}
+//==============================================================================
+int sstRec02Cls::RedCargo ( int              iKey,
+                            sstRec02CargoKeyCls *oDataKey,
+                            void            *vCargoAdr)
+{
+    int iRet  = 0;
+    int iStat = 0;
+  //-----------------------------------------------------------------------------
+    if ( iKey != 0) return -1;
+
+    iStat = this->poRec01Intern->RedCargo( iKey, oDataKey->poCargoKeyIntern, vCargoAdr);
+
+    assert(iRet >= 0);
+
+    // Small Errors will given back
+    iRet = iStat;
+
+    return iRet;
 }
 //==============================================================================

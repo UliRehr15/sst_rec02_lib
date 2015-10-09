@@ -23,4 +23,8 @@ Versions <BR>
 20150920: 2.1 extend i/o functions with writeRec (at position)
           Test folder checked in <BR>
 20150923: 2.2 Changed record indexing from 0..n-1 to 1..n <BR>
-20151001: 2.3 Added vector memory for buffering reading / writing
+20151001: 2.3 Added vector memory for buffering reading / writing <BR>
+20151009: 2.4 Added additional cargo packet system for every record
+          Define one or more cargo systems for every table record
+          Store inside cargo packet more data, which are not user record data
+          Set user record data as one system cargo packet
