@@ -171,6 +171,14 @@ int main() {
           oRecMem_Int.WritNew(0,&j,&dRecNo);
         }
 
+        // Set Status deleted for record 4
+        iStat = oRecMem_Int.RecSetDeleted(0,4);
+        // Read record 4, Error= Is deleted, Returned record is 0
+        iValue = 5;
+        iStat = oRecMem_Int.Read(0,4,&iValue);
+        assert(iStat == -3);
+        assert(iValue == 0);
+
         // Read record 5, has packet 10/ABC and 3.3/ABC DEF
         oRecMem_Int.Read(0,5,&iValue);
         assert(iValue == 5);

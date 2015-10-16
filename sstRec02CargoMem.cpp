@@ -11,7 +11,7 @@
  * See the COPYING file for more information.
  *
  **********************************************************************/
-// sstTemplateLib.cpp    13.07.15  Re.    08.07.15  Re.
+// sstRec02CargoMem.cpp    16.10.15  Re.    16.10.15  Re.
 //
 
 #include <stdio.h>

@@ -40,7 +40,120 @@
 
 //==============================================================================
 /**
-* @brief Definition Class DssCargoMem_Cls
+* @brief sstRecMem Internal Header Class with System Data for every record <BR>
+*
+* With Delete Flag, Mark Flag, Version String, New Date and so on. <BR>
+* Stored as cargo class inside record.
+*
+* Changed: 12.10.15  Re.
+*
+* @ingroup sstRecord02InternLib
+*
+* @author Re.
+*
+* @date 12.10.15
+*/
+// ----------------------------------------------------------------------------
+class sstRec02HeaderCls
+{
+  public:   // Public functions
+     sstRec02HeaderCls();  // Constructor
+     //==============================================================================
+     /**
+     * @brief // Get Size of full record size with all cargo packets <BR>
+     * dRecordSize = oRemMemHeader.getRecSize();
+     *
+     * @retval  Record Size
+     */
+     // ----------------------------------------------------------------------------
+     dREC02RECSIZTYP getRecSize() const;
+     //==============================================================================
+     /**
+     * @brief // Set Size of full Record with all cargo packets <BR>
+     * oRecMem.setRecSize( dRecSize);
+     *
+     * @param dRecSize [in] Record Size
+     *
+     */
+     // ----------------------------------------------------------------------------
+     void setRecSize(const dREC02RECSIZTYP &dRecSize);
+     //==============================================================================
+     /**
+     * @brief return adress of version string
+     *
+     * @return adress of version string
+     */
+     // ----------------------------------------------------------------------------
+     char* GetVersStr();
+     //==============================================================================
+     /**
+     * @brief set version string
+     *
+     * @param cNam [in] adress of version string
+     */
+     // ----------------------------------------------------------------------------
+     void SetVersStr(char *cNam);
+     //==============================================================================
+     /**
+     * @brief set version string
+     */
+     // ----------------------------------------------------------------------------
+     void SetNewDate();
+     //==============================================================================
+     /**
+     * @brief set version string
+     */
+     // ----------------------------------------------------------------------------
+     void SetChangeDate();
+     //==============================================================================
+     /**
+     * @brief set record deleted
+     */
+     // ----------------------------------------------------------------------------
+     void RecSetDeleted();
+     //==============================================================================
+     /**
+     * @brief set record marked
+     */
+     // ----------------------------------------------------------------------------
+     void RecSetMarked();
+     //==============================================================================
+     /**
+     * @brief set record undeleted
+     */
+     // ----------------------------------------------------------------------------
+     void RecSetUndeleted();
+     //==============================================================================
+     /**
+     * @brief set record unmarked
+     */
+     // ----------------------------------------------------------------------------
+     void RecSetUnmarked();
+     //==============================================================================
+     /**
+     * @brief get record Delete Status
+     */
+     // ----------------------------------------------------------------------------
+     bool RecGetDeleteStatus();
+     //==============================================================================
+     /**
+     * @brief get record Mark Status
+     */
+     // ----------------------------------------------------------------------------
+     bool RecGetMarkStatus();
+
+
+private:  // Private functions
+     char cVersionstring[10];    /**< Version String, for exampe sstRec02 */
+     dREC02RECSIZTYP dRecSize;  /**< Size of every Record */
+     char cRecChgDateTime[18];    /**< Write Change Date, for exampe 151012 */
+     char cRecNewDateTime[18];    /**< Write New Date, for exampe 151012 */
+     bool bDel;    /**< Delete Flag */
+     bool bMark;   /**< Mark Flag */
+};
+//==============================================================================
+/**
+* @brief System data for every cargo packet
 *
 * More Comment
 *
@@ -133,7 +246,7 @@ class sstRec02CargoMemCls
 
 //==============================================================================
 /**
-* @brief Definition Class sstRec02VectSysCls
+* @brief vector storage with all defined cargo packets
 *
 * More Comment
 *
@@ -319,9 +432,9 @@ class sstRec02VectSysCls
     void            *vVectorAdr;     /**< main memory vector with all cargo values */
     unsigned long    ulVectorSize;  /**< size of main memory vector */
 };
-//-----------------------------------------------------------------------------
+//==============================================================================
 /**
-* @brief Definition Class DssCargoKey_Cls
+* @brief Intern key object for cargo packet
 *
 * More Comment
 *
@@ -345,34 +458,9 @@ class sstRec02CargoKeyInternCls
   private:  // Private Funktionen
      // int iDummy;
 };
-//-----------------------------------------------------------------------------
-///**
-//* @brief Definition Class Cargo_Cls
-//*
-//* More Comment
-//*
-//* Changed: 19.02.10  Re.
-//*
-//* @ingroup sstDss2_Lib
-//*
-//* @author Re.
-//*
-//* @date 19.02.10
-//*/
-//// ----------------------------------------------------------------------------
-//class sstRec02CargoCls
-//{
-//  public:   // Öffentliche Funktionen
-//     sstRec02CargoCls();  // Konstruktor
-//    ~sstRec02CargoCls();  // Destruktor
-//  private:  // Private Funktionen
-//     void *Adr;              /**< adress in memory  */
-//     unsigned int uiSize;    /**< Size ??  */
-//     char cNam[4];           /**< USR, SYS, TRE, LL1, LL2, LL3  */
-//};
 //==============================================================================
 /**
-* @brief Definition Class sstRec01InternCls
+* @brief intern sstRecMem class
 *
 * Intern class for sstRecordLib <BR>
 *
@@ -626,7 +714,115 @@ class sstRec02InternCls
      int RedCargo ( int              iKey,
                     sstRec02CargoKeyInternCls *oDataKey,
                     void            *vCargoAdr);
-     //=============================================================================
+     //==============================================================================
+     /**
+     * @brief set date/time in new string of header object
+     */
+     // ----------------------------------------------------------------------------
+     void SetNewDate();
+     //==============================================================================
+     /**
+     * @brief set date/time in change string of header object
+     */
+     // ----------------------------------------------------------------------------
+     void SetChangeDate();
+     //==============================================================================
+     /**
+     * @brief // Set record state as deleted  for record dRecNo in RecMem  <BR>
+     * iStat = oRecMem.RecSetDeleted ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RecSetDeleted ( int               iKey,
+                         dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Set record state as marked  for record dRecNo in RecMem  <BR>
+     * iStat = oRecMem.RecSetMarked ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RecSetMarked( int               iKey,
+                        dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Set record state as undeleted  for record dRecNo in RecMem  <BR>
+     * iStat = oRecMem.RecSetUndeleted ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RecSetUndeleted( int               iKey,
+                           dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Set record state as unmarked for record dRecNo in RecMem  <BR>
+     * iStat = oRecMem.RecSetUnmarked ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Errorstate
+     *
+     * @retval   = 0: OK
+     * @retval   < 0: Unspecified Error
+     */
+     // ----------------------------------------------------------------------------
+     int RecSetUnmarked( int               iKey,
+                          dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Get delete state of record dRecNo  <BR>
+     * iStat = oRecMem.RecGetDeleteState ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Delete State
+     *
+     * @retval   = true:  Record is deleted
+     * @retval   = false: Record is undeleted
+     */
+     // ----------------------------------------------------------------------------
+     bool RecGetDeleteStatus( int               iKey,
+                              dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
+     /**
+     * @brief // Get mark state of record dRecNo <BR>
+     * iStat = oRecMem.RecGetMarkState ( iKey,  RecNo);
+     *
+     * @param iKey   [in]  For the moment 0
+     * @param dRecNo [in]  record number
+     *
+     * @return Mark State
+     *
+     * @retval   = true : Record is marked
+     * @retval   = false: Record is unmarked
+     */
+     // ----------------------------------------------------------------------------
+     bool RecGetMarkStatus( int               iKey,
+                            dREC02RECNUMTYP   dRecNo);
+     //==============================================================================
 
   private:  // Private functions
      //==============================================================================
@@ -650,8 +846,10 @@ class sstRec02InternCls
     FILE*          FilHdl;        /**< File Handle: If not NULL, store in file   */
     bool           bFileNotDelete;  /**< Do File not delete   */
     char cDatnam[dREC02FILNAMMAXLEN]; /**< Filename for storing record data   */
+    sstRec02HeaderCls *poHeader;  /**< Intern Header            */
     sstRec02VectSysCls *oVector;  /**< Intern memory space for vector            */
-    sstRec02CargoKeyInternCls *oDssUsrKey;
+    sstRec02CargoKeyInternCls *oDssUsrKey;   /**< Identification Key for Header Cargo */
+    sstRec02CargoKeyInternCls *oDssSysKey;   /**< Identification Kea for User Data Cargo */
 };
 //==============================================================================
 // iStat = Test_VectorSys_Stack ( iKey);
@@ -664,3 +862,4 @@ int Test_VectorSys_Heap (int iKey);
 #endif
 
 // --------------------------------------------------------------- File End ----
+

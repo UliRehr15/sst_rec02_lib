@@ -25,16 +25,20 @@
 //=============================================================================
 sstRec02InternCls::sstRec02InternCls(dREC02RECSIZTYP dRecSize)
 {
+    int iStat = 0;
     quantity = 0;
     storage = 0;
     dActStored = 0;
     FilHdl = NULL;
     bFileNotDelete = 0;  // Default: File will be deleted
 
+    this->oDssSysKey = new (sstRec02CargoKeyInternCls);
     this->oDssUsrKey = new (sstRec02CargoKeyInternCls);
     this->oVector = new sstRec02VectSysCls();
+    this->poHeader = new sstRec02HeaderCls();
 
-    int iStat = this->oVector->AddCargoSys( 0, dRecSize, (char*) "USR", this->oDssUsrKey);
+    iStat = this->AddCargoSys( 0, sizeof(sstRec02HeaderCls), (char*) "SYS", this->oDssSysKey);
+    iStat = this->AddCargoSys( 0, dRecSize, (char*) "USR", this->oDssUsrKey);
     assert(iStat >= 0);
 
 }
@@ -42,8 +46,10 @@ sstRec02InternCls::sstRec02InternCls(dREC02RECSIZTYP dRecSize)
 sstRec02InternCls::~sstRec02InternCls()
 {
 
-    delete (this->oDssUsrKey);
-    delete (this->oVector);
+  delete (this->poHeader);
+  delete (this->oVector);
+  delete (this->oDssUsrKey);
+  delete (this->oDssSysKey);
 
     if(storage) {
       puts("freeing storage");
@@ -96,12 +102,19 @@ int sstRec02InternCls::WritNewInt(int iKey, void* element, dREC02RECNUMTYP *inde
 //=============================================================================
 int sstRec02InternCls::WritNewVector(int iKey, void* vRecAdr, dREC02RECNUMTYP *dRecNo)
 {
-    // write record into vector memory
-    int iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
+  // Set actual date into DateNew field
+  this->poHeader->SetNewDate();
+  this->poHeader->SetChangeDate();
 
-    // Write new record into intern sstRec memory
-    iStat = this->WritNewInt( iKey, this->oVector->GetAdr(), dRecNo);
-    return iStat;
+  // write record into vector memory
+  int iStat = this->oVector->WrtCargo( 0, this->oDssSysKey, this->poHeader);
+
+  // write record into vector memory
+  iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
+
+  // Write new record into intern sstRec memory
+  iStat = this->WritNewInt( iKey, this->oVector->GetAdr(), dRecNo);
+  return iStat;
 }
 
 //=============================================================================
@@ -130,12 +143,25 @@ int sstRec02InternCls::WritInt(int iKey, void* vRecAdr, dREC02RECNUMTYP index)
 int sstRec02InternCls::WritVector(int iKey, void* vRecAdr, dREC02RECNUMTYP dRecNo)
 {
 
-    // write record into vector memory
-    int iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
 
-    // Write Record at position in intern sstRec Memory
-    iStat = this->WritInt( iKey, this->oVector->GetAdr(), dRecNo);
-    return iStat;
+  // Read record from sstRec memory with Record number into vector
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+  if (iStat < 0) return iStat;
+
+  // show header cargo of vector data
+  iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  // Write Change Data in Header Cargo of vector
+  poLocHeader->SetChangeDate();
+
+  // write user record into vector memory
+  iStat = this->oVector->WrtCargo( 0, this->oDssUsrKey, vRecAdr);
+
+  // Write vector Record at position in intern sstRec Memory
+  iStat = this->WritInt( iKey, this->oVector->GetAdr(), dRecNo);
+  return iStat;
 }
 //=============================================================================
 int sstRec02InternCls::ReadInt(int iKey, dREC02RECNUMTYP index, void *vAdr)
@@ -168,11 +194,32 @@ int sstRec02InternCls::ReadInt(int iKey, dREC02RECNUMTYP index, void *vAdr)
 //=============================================================================
 int sstRec02InternCls::ReadVector(int iKey, dREC02RECNUMTYP dRecNo, void *vRecAdr)
 {
-    // Read record from sstRec memory with Record number
+  if ( iKey != 0) return -1;
+
+  // Read record from sstRec memory with Record number
     int iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+    if (iStat < 0) return -2;
+
+    sstRec02HeaderCls *poLocHeader = NULL;
+    iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+    if (poLocHeader->RecGetDeleteStatus())
+    {
+      this->oVector->ResetMem(0);
+      // Read record from vector memory
+      iStat = this->oVector->RedCargo( 0, this->oDssUsrKey, vRecAdr);
+      return -3;
+    }
 
     // Read record from vector memory
-    if (iStat >= 0) iStat = this->oVector->RedCargo( 0, this->oDssUsrKey, vRecAdr);
+    iStat = this->oVector->RedCargo( 0, this->oDssUsrKey, vRecAdr);
+
+    // Read Header Data from vector and test
+    sstRec02HeaderCls oHeaderData;
+    if (iStat >= 0) iStat = this->oVector->RedCargo( 0, this->oDssSysKey, &oHeaderData);
+    iStat = strncmp((char*)"sstRec02", oHeaderData.GetVersStr(), 10);
+    assert(iStat==0);
+    assert(oHeaderData.getRecSize() == this->oVector->GetSize());
 
     return iStat;
 }
@@ -251,6 +298,8 @@ int sstRec02InternCls::AddCargoSys( int                  iKey,
 
     iStat = this->oVector->AddCargoSys(iKey,uiSize,cCargoNam,oCargoKey);
 
+    this->poHeader->setRecSize(this->oVector->GetSize());
+
     assert(iRet >= 0);
 
     // Small Errors will given back
@@ -296,6 +345,138 @@ int sstRec02InternCls::RedCargo ( int              iKey,
     iRet = iStat;
 
     return iRet;
+}
+//==============================================================================
+void sstRec02InternCls::SetNewDate()
+{
+  this->poHeader->SetNewDate();
+}
+//==============================================================================
+void sstRec02InternCls::SetChangeDate()
+{
+  this->poHeader->SetChangeDate();
+}
+//==============================================================================
+int sstRec02InternCls::RecSetDeleted( int               iKey,
+                                       dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return -2;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  if (iStat >= 0) poLocHeader->RecSetDeleted();
+
+  // Write record from vector to sstRec memory with Record number
+  if (iStat >= 0) iStat = this->WritInt( iKey, this->oVector->GetAdr(),dRecNo);
+
+  return iStat;
+}
+//==============================================================================
+int sstRec02InternCls::RecSetMarked( int               iKey,
+                                      dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return -2;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  if (iStat >= 0) poLocHeader->RecSetMarked();
+
+  // Write record from vector to sstRec memory with Record number
+  if (iStat >= 0) iStat = this->WritInt( iKey, this->oVector->GetAdr(),dRecNo);
+
+  return 0;
+}
+//==============================================================================
+int sstRec02InternCls::RecSetUndeleted( int               iKey,
+                                         dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return -2;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  if (iStat >= 0) poLocHeader->RecSetUndeleted();
+
+  // Write record from vector to sstRec memory with Record number
+  if (iStat >= 0) iStat = this->WritInt( iKey, this->oVector->GetAdr(),dRecNo);
+
+  return 0;
+}
+//==============================================================================
+int sstRec02InternCls::RecSetUnmarked( int               iKey,
+                                        dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return -2;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  if (iStat >= 0) poLocHeader->RecSetUnmarked();
+
+  // Write record from vector to sstRec memory with Record number
+  if (iStat >= 0) iStat = this->WritInt( iKey, this->oVector->GetAdr(),dRecNo);
+
+  return 0;
+}
+//==============================================================================
+bool sstRec02InternCls::RecGetDeleteStatus( int               iKey,
+                                            dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return 0;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  return poLocHeader->RecGetDeleteStatus();
+}
+//==============================================================================
+bool sstRec02InternCls::RecGetMarkStatus( int               iKey,
+                                          dREC02RECNUMTYP   dRecNo)
+{
+  if ( iKey != 0) return -1;
+  if (dRecNo < 1 || dRecNo > this->dActStored) return 0;
+
+  sstRec02HeaderCls *poLocHeader = NULL;
+  int iStat = 0;
+
+  // Read record from sstRec memory with Record number
+  iStat = this->ReadInt( iKey, dRecNo, this->oVector->GetAdr());
+
+  if (iStat >= 0) iStat = this->oVector->GetCargoAdr(0,this->oDssSysKey,(void**) &poLocHeader);
+
+  return poLocHeader->RecGetMarkStatus();
 }
 //==============================================================================
 

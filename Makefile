@@ -43,17 +43,19 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = sstRec02.cpp \
-		sstRec03CargoMem.cpp \
 		sstRec02TestIntern.cpp \
 		sstRec02TestRec.cpp \
+		sstRec02Header.cpp \
+		sstRec02CargoMem.cpp \
 		sstRec02CargoKey.cpp \
 		sstRec02CargoKeyInt.cpp \
 		sstRec02Int.cpp \
 		sstRec02Vector.cpp 
 OBJECTS       = sstRec02.o \
-		sstRec03CargoMem.o \
 		sstRec02TestIntern.o \
 		sstRec02TestRec.o \
+		sstRec02Header.o \
+		sstRec02CargoMem.o \
 		sstRec02CargoKey.o \
 		sstRec02CargoKeyInt.o \
 		sstRec02Int.o \
@@ -302,10 +304,6 @@ sstRec02.o: sstRec02.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02.o sstRec02.cpp
 
-sstRec03CargoMem.o: sstRec03CargoMem.cpp Header/sstRec02Lib.h \
-		sstRec02LibInt.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec03CargoMem.o sstRec03CargoMem.cpp
-
 sstRec02TestIntern.o: sstRec02TestIntern.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02TestIntern.o sstRec02TestIntern.cpp
@@ -313,6 +311,14 @@ sstRec02TestIntern.o: sstRec02TestIntern.cpp Header/sstRec02Lib.h \
 sstRec02TestRec.o: sstRec02TestRec.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02TestRec.o sstRec02TestRec.cpp
+
+sstRec02Header.o: sstRec02Header.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02Header.o sstRec02Header.cpp
+
+sstRec02CargoMem.o: sstRec02CargoMem.cpp Header/sstRec02Lib.h \
+		sstRec02LibInt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sstRec02CargoMem.o sstRec02CargoMem.cpp
 
 sstRec02CargoKey.o: sstRec02CargoKey.cpp Header/sstRec02Lib.h \
 		sstRec02LibInt.h

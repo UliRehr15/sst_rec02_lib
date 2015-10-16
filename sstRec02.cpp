@@ -141,3 +141,39 @@ int sstRec02Cls::RedCargo ( int              iKey,
     return iRet;
 }
 //==============================================================================
+int sstRec02Cls::RecSetDeleted ( int               iKey,
+                                 dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecSetDeleted( iKey, dRecNo);
+}
+//==============================================================================
+int sstRec02Cls::RecSetMarked( int               iKey,
+                                dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecSetMarked( iKey, dRecNo);
+}
+//==============================================================================
+int sstRec02Cls::RecSetUndeleted( int               iKey,
+                                   dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecSetUndeleted( iKey, dRecNo);
+}
+//==============================================================================
+int sstRec02Cls::RecSetUnmarked( int               iKey,
+                                  dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecSetUnmarked( iKey, dRecNo);
+}
+//==============================================================================
+bool sstRec02Cls::RecGetDeleteStatus( int               iKey,
+                                      dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecGetDeleteStatus( iKey, dRecNo);
+}
+//==============================================================================
+bool sstRec02Cls::RecGetMarkStatus( int               iKey,
+                                    dREC02RECNUMTYP   dRecNo)
+{
+  return this->poRec01Intern->RecGetMarkStatus( iKey, dRecNo);
+}
+//==============================================================================

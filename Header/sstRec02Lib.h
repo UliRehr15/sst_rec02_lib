@@ -57,17 +57,15 @@ class sstRec02CargoKeyInternCls;
 
 //==============================================================================
 /**
-* @brief Definition Class sstTestInterfaceCls
+* @brief Identification Key for cargo packets
 *
-* template for sst base class <BR>
+* Changed: 16.10.15  Re.
 *
-* Changed: 09.07.15  Re.
-*
-* @ingroup sstTemplateLib
+* @ingroup sstRecord02Lib
 *
 * @author Re.
 *
-* @date 09.07.15
+* @date 16.10.15
 */
 // ----------------------------------------------------------------------------
 class sstRec02CargoKeyCls
@@ -75,22 +73,7 @@ class sstRec02CargoKeyCls
   public:   // Public functions
      sstRec02CargoKeyCls();  // Constructor
     ~sstRec02CargoKeyCls();  // Destructor
-     //==============================================================================
-     /**
-     * @brief Shortstory
-     *
-     * @param iKey [in] For the moment 0
-     *
-     * @return Errorstate
-     *
-     * @retval   = 0: OK
-     * @retval   < 0: Unspecified Error
-     */
-     // ----------------------------------------------------------------------------
-         // Func_1(int iKey);
-     // ----------------------------------------------------------------------------
-       // private:  // Private functions
-     // sstRec02CargoKeyInternCls* GetInternAdr();
+
      sstRec02CargoKeyInternCls *poCargoKeyIntern;   /**< Pointer to intern object */
 
 };
@@ -297,7 +280,104 @@ public:
   int RedCargo ( int                  iKey,
                  sstRec02CargoKeyCls *oCargoKey,
                  void                *vCargoAdr);
-  //=============================================================================
+  //==============================================================================
+  /**
+  * @brief // Set record state as deleted  for record dRecNo in RecMem  <BR>
+  * iStat = oRecMem.RecSetDeleted ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Errorstate
+  *
+  * @retval   = 0: OK
+  * @retval   < 0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int RecSetDeleted ( int               iKey,
+                      dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+  /**
+  * @brief // Set record state as marked  for record dRecNo in RecMem  <BR>
+  * iStat = oRecMem.RecSetMarked ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Errorstate
+  *
+  * @retval   = 0: OK
+  * @retval   < 0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int RecSetMarked( int               iKey,
+                     dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+  /**
+  * @brief // Set record state as undeleted  for record dRecNo in RecMem  <BR>
+  * iStat = oRecMem.RecSetUndeleted ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Errorstate
+  *
+  * @retval   = 0: OK
+  * @retval   < 0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int RecSetUndeleted( int               iKey,
+                        dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+  /**
+  * @brief // Set record state as unmarked for record dRecNo in RecMem  <BR>
+  * iStat = oRecMem.RecSetUnmarked ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Errorstate
+  *
+  * @retval   = 0: OK
+  * @retval   < 0: Unspecified Error
+  */
+  // ----------------------------------------------------------------------------
+  int RecSetUnmarked( int               iKey,
+                       dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+  /**
+  * @brief // Get delete state of record dRecNo  <BR>
+  * iStat = oRecMem.RecGetDeleteState ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Delete State
+  *
+  * @retval   = true:  Record is deleted
+  * @retval   = false: Record is undeleted
+  */
+  // ----------------------------------------------------------------------------
+  bool RecGetDeleteStatus( int               iKey,
+                           dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+  /**
+  * @brief // Get mark state of record dRecNo <BR>
+  * iStat = oRecMem.RecGetMarkState ( iKey,  RecNo);
+  *
+  * @param iKey   [in]  For the moment 0
+  * @param dRecNo [in]  record number
+  *
+  * @return Mark State
+  *
+  * @retval   = true : Record is marked
+  * @retval   = false: Record is unmarked
+  */
+  // ----------------------------------------------------------------------------
+  bool RecGetMarkStatus( int               iKey,
+                         dREC02RECNUMTYP   dRecNo);
+  //==============================================================================
+
 
 private:
   sstRec02InternCls *poRec01Intern;   /**< Pointer to intern object */
@@ -305,6 +385,18 @@ private:
 };
 
 //==============================================================================
+/**
+* @brief Small test record class
+*
+* Changed: 16.10.15 Re.
+*
+* @ingroup sstRecord02Lib
+*
+* @author Re.
+*
+* @date 16.10
+*/
+// ----------------------------------------------------------------------------
 class sstRec02TestRec1Cls
 {
   public:   // Public functions
@@ -314,6 +406,18 @@ class sstRec02TestRec1Cls
 
 };
 //==============================================================================
+/**
+* @brief Full test record class
+*
+* Changed: 16.10.15 Re.
+*
+* @ingroup sstRecord02Lib
+*
+* @author Re.
+*
+* @date 16.10.15
+*/
+// ----------------------------------------------------------------------------
 class sstRec02TestRec2Cls
 {
   public:   // Public functions
